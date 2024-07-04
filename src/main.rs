@@ -1,5 +1,8 @@
+mod file_handler;
+
 use anyhow::Result;
 use clap::Parser;
+use file_handler::IndexDataPair;
 use std::path::PathBuf;
 
 // Parser setup
@@ -34,7 +37,13 @@ struct Args {
 
 fn main() -> Result<()> {
     // Parse arguments
-    let _args: Args = Args::parse();
+    let args: Args = Args::parse();
+
+    // Verify input directory is valid before proceeding
+    if file_handler::is_valid_dir(&args.directory)?{
+        // Get file paths
+        let path_pairs: Vec<IndexDataPair> = file_handler::get_paths(&args.directory)?;
+    }
 
     Ok(())
 }
