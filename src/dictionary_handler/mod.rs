@@ -114,7 +114,5 @@ pub fn get_word_data(index_data_pairs: &Vec<IndexDataPair>, args: &Args) -> Resu
         }
     }
 
-    println!("{}", words.len());
-
     Ok((definitions, words))
 }
