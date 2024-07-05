@@ -28,6 +28,12 @@ struct Args {
     /// Directory to place output file into (default: working directory)
     #[arg(short, long)]
     output_directory: Option<PathBuf>,
+    /// Minimum character count of a word to save (default: 0)
+    #[arg(short = 'm', long, default_value_t = 0)]
+    min_chars: usize,
+    /// Maximum character count of a word to save (default: 45)
+    #[arg(short = 'M', long, default_value_t = 45)]
+    max_chars: usize,
     /// Keep words with numbers
     #[arg(short, long, default_value_t = false)]
     keep_numbers: bool,

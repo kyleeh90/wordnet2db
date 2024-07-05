@@ -72,6 +72,14 @@ pub fn get_word_data(index_data_pairs: &Vec<IndexDataPair>, args: &Args) -> Resu
                 continue;
             }
 
+            // Check word length against arguments
+            let word_length: usize = found_word.len();
+
+            if word_length < args.min_chars || word_length > args.max_chars{
+                index_line.clear();
+                continue;
+            }
+
             // Get every offset as a u64
             let byte_offsets: Vec<u64> = offset_regex.captures_iter(&index_line)
                 .filter_map(|captures| captures["offset"].parse::<u64>().ok())
