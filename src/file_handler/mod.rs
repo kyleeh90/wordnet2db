@@ -5,12 +5,13 @@ use std::path::{Path, PathBuf};
 
 pub struct IndexDataPair{
     index_path: PathBuf,
-    data_path: PathBuf
+    data_path: PathBuf,
+    part_of_speech: String
 }
 
 impl IndexDataPair{
-    pub fn new(index_path: PathBuf, data_path: PathBuf) -> IndexDataPair{
-        IndexDataPair { index_path, data_path }
+    pub fn new(index_path: PathBuf, data_path: PathBuf, part_of_speech: String) -> IndexDataPair{
+        IndexDataPair { index_path, data_path, part_of_speech }
     }
 
     pub fn get_data_path(&self) -> &PathBuf{
@@ -19,6 +20,10 @@ impl IndexDataPair{
 
     pub fn get_index_path(&self) -> &PathBuf{
         &self.index_path
+    }
+
+    pub fn get_part_of_speech(&self) -> &String{
+        &self.part_of_speech
     }
 }
 
@@ -66,8 +71,21 @@ pub fn get_paths(dir_path: &Path) -> Result<Vec<IndexDataPair>>{
     for index_path in &index_paths{
         for data_path in &data_paths{
             if data_path.extension() == index_path.extension(){
-                index_data_vec.push(IndexDataPair::new(index_path.to_owned(), data_path.to_owned()));
-                continue;
+                 // Get part of speech
+                 let mut part_of_speech: String = String::new();
+
+                 if let Some(extension) = index_path.extension(){
+                     part_of_speech = extension.to_string_lossy().to_string();
+                 }
+ 
+                 if part_of_speech == "adj"{
+                     part_of_speech = "adjective".to_string();
+                 } else if part_of_speech == "adv" {
+                     part_of_speech = "adverb".to_string();
+                 }
+ 
+                 index_data_vec.push(IndexDataPair::new(index_path.to_owned(), data_path.to_owned(), part_of_speech));
+                 continue;
             }
         }
     }

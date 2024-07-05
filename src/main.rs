@@ -1,3 +1,4 @@
+mod dictionary_handler;
 mod file_handler;
 
 use anyhow::Result;
@@ -21,17 +22,11 @@ struct Args {
     /// Directory to place output file into (default: working directory)
     #[arg(short, long)]
     output_directory: Option<PathBuf>,
-    /// Keep words with hyphens (default: false)
-    #[arg(short = 'H', long, default_value_t = false)]
-    keep_hyphens: bool,
-    /// Keep words with numbers (default: false)
-    #[arg(short = 'N', long, default_value_t = false)]
+    /// Keep words with numbers
+    #[arg(short, long, default_value_t = false)]
     keep_numbers: bool,
-    /// Keep words with spaces (default: false)
-    #[arg(short = 'S', long, default_value_t = false)]
-    keep_spaces: bool,
-    /// Only keep words without punctuation or spaces (default: true)
-    #[arg(short = 'W', long, default_value_t = true)]
+    /// Only keep words without punctuation or spaces
+    #[arg(short, long, default_value_t = false)]
     only_whole_words: bool
 }
 
@@ -43,6 +38,9 @@ fn main() -> Result<()> {
     if file_handler::is_valid_dir(&args.directory)?{
         // Get file paths
         let path_pairs: Vec<IndexDataPair> = file_handler::get_paths(&args.directory)?;
+
+        // Get word data
+        dictionary_handler::get_word_data(&path_pairs, &args)?;
     }
 
     Ok(())
