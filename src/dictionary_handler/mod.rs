@@ -8,13 +8,14 @@ use std::io::{BufRead, BufReader, Seek, SeekFrom};
 
 pub type Definitions = HashMap<u64, Definition>;
 pub type Words = BTreeMap<String, HashSet<u64>>;
+pub type WordData = (Definitions, Words);
 
 pub struct Definition{
     pub definition: String,
     pub part_of_speech: String
 }
 
-pub fn get_word_data(index_data_pairs: &Vec<IndexDataPair>, args: &Args) -> Result<()>{
+pub fn get_word_data(index_data_pairs: &Vec<IndexDataPair>, args: &Args) -> Result<WordData>{
     // Print status message
     println!("Getting words and definitions...");
 
@@ -115,5 +116,5 @@ pub fn get_word_data(index_data_pairs: &Vec<IndexDataPair>, args: &Args) -> Resu
 
     println!("{}", words.len());
 
-    Ok(())
+    Ok((definitions, words))
 }
