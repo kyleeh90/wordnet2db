@@ -1,13 +1,13 @@
 mod dictionary_handler;
 mod file_handler;
 
-use anyhow::Result;
+use anyhow::{bail, Result};
 use clap::Parser;
 use colored::Colorize;
 use dictionary_handler::WordData;
 use file_handler::IndexDataPair;
 use rusqlite::{Connection, Transaction};
-use std::collections::HashMap;
+use std::collections::{hash_map::Entry, HashMap};
 use std::env::current_dir;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
@@ -57,6 +57,11 @@ fn main() -> Result<()> {
 
         // Get word data
         let word_data: WordData = dictionary_handler::get_word_data(&path_pairs, &args)?;
+
+        // Throw an error if no words found
+        if word_data.1.is_empty(){
+            bail!("No words found for given arguments!".red())
+        }
 
         // Check if an output path is specified and is valid and create database
         if let Some(output) = args.output_directory{
@@ -139,7 +144,7 @@ fn create_database(output_path: &Path, word_data: WordData) -> Result<()>{
 
             // Insert definitions
             for offset in offsets{
-                if definition_ids.get(&offset).is_none(){
+                if let Entry::Vacant(e) = definition_ids.entry(offset){
                     // Get definition
                     let definition_option = definitions.get(&offset);
 
@@ -148,7 +153,7 @@ fn create_database(output_path: &Path, word_data: WordData) -> Result<()>{
                         insert_definition.execute([&definition.definition, &definition.part_of_speech])?;
 
                         // Create an offset/id association
-                        definition_ids.insert(offset, definition_id);
+                        e.insert(definition_id);
 
                         // Increment definition id
                         definition_id += 1;
@@ -157,7 +162,7 @@ fn create_database(output_path: &Path, word_data: WordData) -> Result<()>{
 
                 // Add entry to associative table
                 if let Some(id) = definition_ids.get(&offset){
-                    insert_word_definition.execute([&id, &word_id])?;
+                    insert_word_definition.execute([id, &word_id])?;
                 }
             }
 
