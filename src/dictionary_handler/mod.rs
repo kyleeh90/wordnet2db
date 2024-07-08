@@ -11,7 +11,7 @@ pub type Words = BTreeMap<String, HashSet<u64>>;
 pub type WordData = (Definitions, Words);
 
 pub struct Definition{
-    pub definition: String,
+    pub data: String,
     pub part_of_speech: String
 }
 
@@ -112,7 +112,7 @@ pub fn get_word_data(index_data_pairs: &Vec<IndexDataPair>, args: &Args) -> Resu
                }
 
                // Add it to the definitions if it wasn't present
-               definitions.entry(offset).or_insert_with(|| Definition { definition, part_of_speech: pair.get_part_of_speech().clone() });
+               definitions.entry(offset).or_insert_with(|| Definition { data: definition, part_of_speech: pair.get_part_of_speech().clone() });
 
                // Clear current line
                data_current_line.clear();
