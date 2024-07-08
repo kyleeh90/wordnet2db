@@ -57,8 +57,8 @@ pub fn get_word_data(index_data_pairs: &Vec<IndexDataPair>, args: &Args) -> Resu
                 continue;
             }
 
-            // Get the word
-            let found_word: String = index_line.split(' ').collect::<Vec<&str>>()[0].to_string();
+            // Get the word (double up on single quotes if present)
+            let found_word: String = index_line.split(' ').collect::<Vec<&str>>()[0].to_string().replace("'", "''");
 
             // Check for numbers
             if !args.keep_numbers && number_regex.is_match(&found_word){
@@ -106,9 +106,9 @@ pub fn get_word_data(index_data_pairs: &Vec<IndexDataPair>, args: &Args) -> Resu
                // Create an empty definition string
                let mut definition: String = String::new();
 
-               // Get any definition that was found
+               // Get any definition that was found (double up on single quotes if found)
                if let Some(captures) = definition_regex.captures(&data_current_line){
-                   definition = captures["definition"].to_string();
+                   definition = captures["definition"].to_string().replace("'", "''");
                }
 
                // Add it to the definitions if it wasn't present

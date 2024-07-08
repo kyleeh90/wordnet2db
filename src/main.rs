@@ -38,7 +38,10 @@ struct Args {
     keep_numbers: bool,
     /// Only keep words without punctuation or spaces
     #[arg(short = 'W', long, default_value_t = false)]
-    only_whole_words: bool
+    only_whole_words: bool,
+    /// Renders database as SQL statements rather than an SQLite database
+    #[arg(short, long, default_value_t = false)]
+    dump_sql: bool
 }
 
 
@@ -64,16 +67,26 @@ fn main() -> Result<()> {
 
         // Check if an output path is specified and is valid and create database
         if let Some(output) = args.output_directory{
-            if file_handler::is_valid_dir(&output)?{
+            if file_handler::is_valid_dir(&output)? && args.dump_sql{
+                db_handler::dump_sql(&output, word_data)?;
+            } else{
                 db_handler::create_word_database(&output, word_data)?;
             }
         } else{
-            db_handler::create_word_database(&current_dir()?, word_data)?;
+            if args.dump_sql{
+                db_handler::dump_sql(&current_dir()?, word_data)?;
+            } else{
+                db_handler::create_word_database(&current_dir()?, word_data)?;
+            }
         }
     }
 
     // Print status message
-    println!("{}", String::from("Database created successfully!").green());
+    if args.dump_sql{
+        println!("{}", String::from("SQL created successfully!").green());
+    } else{
+        println!("{}", String::from("Database created successfully!").green());
+    }
 
     // Print benchmark
     println!("Program complete in {:.2?}", start_time.elapsed());
