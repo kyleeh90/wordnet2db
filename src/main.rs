@@ -36,6 +36,9 @@ struct Args {
     /// Keep words with numbers
     #[arg(short, long, default_value_t = false)]
     keep_numbers: bool,
+    /// Comma seperated list of character counts to save
+    #[arg(short, long, value_delimiter = ',', num_args = 0.., conflicts_with_all = ["min_chars", "max_chars"])]
+    char_counts: Vec<usize>,
     /// Only keep words without punctuation or spaces
     #[arg(short = 'W', long, default_value_t = false)]
     only_whole_words: bool,

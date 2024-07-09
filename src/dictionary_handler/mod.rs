@@ -75,7 +75,12 @@ pub fn get_word_data(index_data_pairs: &Vec<IndexDataPair>, args: &Args) -> Resu
             // Check word length against arguments
             let word_length: usize = found_word.len();
 
-            if word_length < args.min_chars || word_length > args.max_chars{
+            if args.char_counts.len() > 0{
+                if !args.char_counts.contains(&word_length){
+                    index_line.clear();
+                    continue;
+                }
+            } else if word_length < args.min_chars || word_length > args.max_chars{
                 index_line.clear();
                 continue;
             }
