@@ -28,7 +28,7 @@ struct Args {
     #[arg(short, long)]
     directory: PathBuf,
     /// Renders database as SQL statements rather than an SQLite database
-    #[arg(short, long, default_value_t = false)]
+    #[arg(short = 'S', long, default_value_t = false)]
     dump_sql: bool,
     /// Keep words with numbers
     #[arg(short, long, default_value_t = false)]
@@ -44,7 +44,10 @@ struct Args {
     only_whole_words: bool,
     /// Directory to place output file into (default: working directory)
     #[arg(short, long)]
-    output_directory: Option<PathBuf>
+    output_directory: Option<PathBuf>,
+    /// Renders dictionary as JSON rather than an SQLite database
+    #[arg(short = 'J',long, default_value_t = false, conflicts_with = "dump_sql")]
+    to_json: bool
 }
 
 
@@ -72,12 +75,16 @@ fn main() -> Result<()> {
         if let Some(output) = args.output_directory{
             if file_handler::is_valid_dir(&output)? && args.dump_sql{
                 db_handler::dump_sql(&output, word_data)?;
+            } else if args.to_json{
+                dictionary_handler::word_data_to_json(&output, word_data)?;
             } else{
                 db_handler::create_word_database(&output, word_data)?;
             }
         } else{
             if args.dump_sql{
                 db_handler::dump_sql(&current_dir()?, word_data)?;
+            } else if args.to_json{
+                dictionary_handler::word_data_to_json(&current_dir()?, word_data)?;
             } else{
                 db_handler::create_word_database(&current_dir()?, word_data)?;
             }

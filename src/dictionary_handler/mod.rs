@@ -2,14 +2,23 @@ use anyhow::Result;
 use crate::Args;
 use crate::file_handler::IndexDataPair;
 use regex::Regex;
+use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fs::File;
-use std::io::{BufRead, BufReader, Seek, SeekFrom};
+use std::io::{BufRead, BufReader, Seek, SeekFrom, Write};
+use std::path::Path;
 
 pub type Definitions = HashMap<u64, Definition>;
 pub type Words = BTreeMap<String, HashSet<u64>>;
 pub type WordData = (Definitions, Words);
 
+#[derive(Serialize, Deserialize)]
+struct WordDataJson{
+    word: String,
+    definitions: Vec<Definition>
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct Definition{
     pub data: String,
     pub part_of_speech: String
@@ -128,4 +137,38 @@ pub fn get_word_data(index_data_pairs: &Vec<IndexDataPair>, args: &Args) -> Resu
     }
 
     Ok((definitions, words))
+}
+
+
+pub fn word_data_to_json(output_path: &Path, word_data: WordData) -> Result<()>{
+    // Print status message
+    println!("Creating JSON...");
+
+    // Get words and definitions
+    let (definitions, words) = word_data;
+    
+    // Create vec to store words/definitions
+    let mut data_vec: Vec<WordDataJson> = vec![];
+
+    // Process words and definitions
+    for (word, offsets) in words{
+        // Create a WordDataJson object to work on
+        let mut word_json: WordDataJson = WordDataJson{word, definitions: vec![]};
+
+        // Get every definition for the word
+        for offset in offsets{
+            if let Some(definition) = definitions.get(&offset){
+                word_json.definitions.push(Definition{data: definition.data.clone(), part_of_speech: definition.part_of_speech.clone()});
+            }
+        }
+
+        data_vec.push(word_json);
+    }
+
+    // Save to file
+    let json: String = serde_json::to_string_pretty(&data_vec)?;
+    let mut file = File::create(output_path.join("dictionary.json"))?;
+    file.write_all(json.as_bytes())?;
+    
+    Ok(())
 }
