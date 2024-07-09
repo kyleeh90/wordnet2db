@@ -21,30 +21,30 @@ use std::time::Instant;
 /// 
 /// Outputs a sqlite database
 struct Args {
-    /// Directory where WordNet files are located (index.adj, index.adv, data.adj, etc)
-    #[arg(short, long)]
-    directory: PathBuf,
-    /// Directory to place output file into (default: working directory)
-    #[arg(short, long)]
-    output_directory: Option<PathBuf>,
-    /// Minimum character count of a word to save (default: 0)
-    #[arg(short = 'm', long, default_value_t = 0)]
-    min_chars: usize,
-    /// Maximum character count of a word to save (default: 45)
-    #[arg(short = 'M', long, default_value_t = 45)]
-    max_chars: usize,
-    /// Keep words with numbers
-    #[arg(short, long, default_value_t = false)]
-    keep_numbers: bool,
     /// Comma seperated list of character counts to save
     #[arg(short, long, value_delimiter = ',', num_args = 0.., conflicts_with_all = ["min_chars", "max_chars"])]
     char_counts: Vec<usize>,
+    /// Directory where WordNet files are located (index.adj, index.adv, data.adj, etc)
+    #[arg(short, long)]
+    directory: PathBuf,
+    /// Renders database as SQL statements rather than an SQLite database
+    #[arg(short, long, default_value_t = false)]
+    dump_sql: bool,
+    /// Keep words with numbers
+    #[arg(short, long, default_value_t = false)]
+    keep_numbers: bool,
+    /// Maximum character count of a word to save (default: 45)
+    #[arg(short = 'M', long, default_value_t = 45)]
+    max_chars: usize,
+    /// Minimum character count of a word to save (default: 0)
+    #[arg(short = 'm', long, default_value_t = 0)]
+    min_chars: usize,
     /// Only keep words without punctuation or spaces
     #[arg(short = 'W', long, default_value_t = false)]
     only_whole_words: bool,
-    /// Renders database as SQL statements rather than an SQLite database
-    #[arg(short, long, default_value_t = false)]
-    dump_sql: bool
+    /// Directory to place output file into (default: working directory)
+    #[arg(short, long)]
+    output_directory: Option<PathBuf>
 }
 
 
