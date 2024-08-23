@@ -6,7 +6,7 @@ Files available from Princeton University at https://wordnet.princeton.edu/downl
 
 ## Options
 -c, --char-counts [<CHAR_COUNTS>...]  
-&emsp;&emsp;Comma seperated list of character counts to save e.g. 4,7
+&emsp;&emsp;Comma seperated list of character counts to save e.g. 4,7  
 -d, --directory <DIRECTORY>  
 &emsp;&emsp;Directory where WordNet files are located (index.adj, index.adv, data.adj, etc)  
 -S, --dump-sql  
