@@ -9,17 +9,16 @@ use dictionary_handler::WordData;
 use file_handler::IndexDataPair;
 use std::env::current_dir;
 use std::path::PathBuf;
-use std::time::Instant;
 
 // Parser setup
 #[derive(Parser)]
 #[command(name = "WordNet Parser")]
-#[command(version = "0.1.0")]
+#[command(version = "1.0.0")]
 /// Parse Princeton University's WordNet files.
 /// 
 /// Get a list of English words & definitions by parsing Princeton's WordNet files
 /// 
-/// Outputs a sqlite database
+/// Outputs an SQLite database, SQL statements, or a JSON file
 struct Args {
     /// Comma seperated list of character counts to save
     #[arg(short, long, value_delimiter = ',', num_args = 0.., conflicts_with_all = ["min_chars", "max_chars"])]
@@ -33,10 +32,10 @@ struct Args {
     /// Keep words with numbers
     #[arg(short, long, default_value_t = false)]
     keep_numbers: bool,
-    /// Maximum character count of a word to save (default: 45)
+    /// Maximum character count of a word to save
     #[arg(short = 'M', long, default_value_t = 45)]
     max_chars: usize,
-    /// Minimum character count of a word to save (default: 0)
+    /// Minimum character count of a word to save
     #[arg(short = 'm', long, default_value_t = 0)]
     min_chars: usize,
     /// Only keep words without punctuation or spaces
@@ -52,9 +51,6 @@ struct Args {
 
 
 fn main() -> Result<()> {
-    // Start benchmark
-    let start_time: Instant = Instant::now();
-
     // Parse arguments
     let args: Args = Args::parse();
 
@@ -94,12 +90,11 @@ fn main() -> Result<()> {
     // Print status message
     if args.dump_sql{
         println!("{}", String::from("SQL created successfully!").green());
+    } else if args.to_json{
+        println!("{}", String::from("JSON created successfully!").green());
     } else{
         println!("{}", String::from("Database created successfully!").green());
     }
-
-    // Print benchmark
-    println!("Program complete in {:.2?}", start_time.elapsed());
 
     Ok(())
 }
